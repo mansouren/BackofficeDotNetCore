@@ -1,0 +1,15 @@
+{
+  "ProviderName": "SqlServer",
+  "ConnectionString": "Server=172.25.16.41,6985;Initial Catalog=B2STxn;user id=appuser; Password=9ol.)P:?;MultipleActiveResultSets=true;",
+  "SchemaName": null,
+  "ClassPrefix": null,
+  "ClassSuffix": null,
+  "IncludeViews": true,
+  "ExcludePrefix": [ "es", "s" ],
+  "Namespace": "B2STxn.Models",
+  "ExplicitColumns": true,
+  "TrackModifiedColumns": true,
+  "Tables": {
+  }
+
+}

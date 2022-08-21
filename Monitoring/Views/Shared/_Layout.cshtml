@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACQ Monitoring</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib//bootstrap/dist/css/bootstrap.rtl.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Monitoring.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-3">
+                @*   <mon:timecontrol ID="timcontrol" runat="server" />
+                <mon:channelcontrol ID="timecontrol" runat="server" />*@
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="row">
+                    <main role="main" class="pb-3">
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - Monitoring
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/microsoft//signalr/dist/browser/signalr.js"></script>
+    <script src="~/highChart/highcharts.js"></script>
+    
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/accessibility.js"></script>
+    <script src="~/monitoring/txnhisbyrespcha-highChart.js"></script>
+    @*<script src="~/monitoring/common.js"></script>*@
+    <script src="~/monitoring/txnrevhistorycha.js"></script>
+    <script src="~/monitoring/txnhisbyposcha.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

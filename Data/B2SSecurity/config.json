@@ -1,0 +1,14 @@
+{
+  "ProviderName": "SqlServer",
+  "ConnectionString": "Server=192.168.80.2\\sepacq;Initial Catalog=B2SSecurity;user id=sa; Password=1qaz!QAZ;",
+  "SchemaName": null,
+  "ClassPrefix": null,
+  "ClassSuffix": null,
+  "IncludeViews": true,
+  "ExcludePrefix": [ "es", "s" ],
+  "Namespace": "B2SSecurity.Models",
+  "ExplicitColumns": true,
+  "TrackModifiedColumns": true,
+  "Tables": {
+  }
+}
