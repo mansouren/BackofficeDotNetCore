@@ -2,13 +2,6 @@
 $(document).ready(function () {
     let isFirstCallSuccess = false;
 
-    var connection = new signalR
-        .HubConnectionBuilder()
-        .withUrl("/monitoringHub").build();
-
-    connection.start().then(() => console.log("hubconnected")).catch(() => console.log(error));//establish connection
-
-
     connection.on("populatetxns", (result) => {
         if (!isFirstCallSuccess)
             getChartData(JSON.parse(result));
@@ -17,10 +10,11 @@ $(document).ready(function () {
         addChartData(JSON.parse(result));
     });
 
+    var dataSets = new Array();
 
     function getChartData(result) {
 
-        var dataSets = new Array();
+        console.log('Im getting data');
 
         for (i = 0; i < result.datasets.length; i++) {
             var entity = {};
@@ -29,18 +23,16 @@ $(document).ready(function () {
             entity.color = result.datasets[i].color;
             entity.type = 'area';
             dataSets.push(entity);
-
+            debugger;
         }
 
-        txnresphisbycha = Highcharts.chart('txnrevhischa', {
+        txnresphisbycha = Highcharts.chart('txnhisbyrespcha', {
             chart: {
                 zoomType: 'x',
                 alignTicks: false,
                 height: (10 / 22 * 100) + '%' // set ratio
             },
-            global: {
-                useUTC: false
-            },
+
             //rangeSelector: {
             //    selected: 2,
             //    inputEnabled: false,
@@ -98,19 +90,27 @@ $(document).ready(function () {
             },
             tooltip: {
                 enabled: true,
-                rtl: true,
+                rtl: false,
                 split: false,
                 shared: true,
+                crosshairs: true,
                 xDateFormat: '%H:%M',
                 useHTML: true,
                 style: {
                     fontFamily: 'IRANSansWeb',
                     fontSize: '15px',
-                    rtl: true,
+
                 },
                 distance: 30,
                 padding: 5,
-                headerFormat: '<span>{point.key}</span><br/>'
+                headerFormat: '<span>{point.key}</span><br/>',
+                formatter: function () {
+                    return this.points.reduce(function (s, point) {
+                        return s + '<br/>' +
+                            point.series.name + ': ' +
+                            point.y + "<span style='color:" + point.series.color + ";'>\u25CF </span> ";
+                    }, '<b>' + getTimeFormat(this.x) + '</b>');
+                }
             },
             xAxis: {
                 zoomEnabled: true,
@@ -121,17 +121,10 @@ $(document).ready(function () {
                 tickmarkPlacement: 'on',
                 startOnTick: true,
                 endOnTick: true,
-                //labels: {
-                //    type: 'datetime',
-                //    step: 1,
-                //    rotation: 55,
-                //    style: {
-                //        fontSize: '11px',
-                //        fontFamily: 'IRANSansWeb'
-                //    },
+
                 labels: {
                     formatter() {
-                        // console.log(getTimeFormat(this.value));
+
                         return getTimeFormat(this.value);
                     },
                     rotation: 55,
@@ -185,54 +178,42 @@ $(document).ready(function () {
             series: dataSets,
             navigator: {
                 enabled: true
+            },
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            enabled: false
+                        }
+                    }
+                }]
             }
 
+
         });
+
 
         isFirstCallSuccess = true;
     }
 
     function addChartData(result) {
-        if (!isFirstCallSuccess) return;
 
+        if (!isFirstCallSuccess) return;
         if (txnresphisbycha.xAxis[0].categories[txnresphisbycha.xAxis[0].categories.length - 1] != result.labels[0]) {
-          
-            txnresphisbycha.series[0].addPoint([result.labels[0], result.datasets[0]], true, true);
-            txnresphisbycha.series[1].addPoint([result.labels[0], result.datasets[1]], true, true);
-            txnresphisbycha.series[2].addPoint([result.labels[0], result.datasets[2]], true, true);
-            txnresphisbycha.series[3].addPoint([result.labels[0], result.datasets[3]], true, true);
-            /*txnresphisbycha.redraw();*/
-            //getTimeFormat(txnresphisbycha.xAxis[0].categories[txnresphisbycha.xAxis[0].categories.length - 1]);
+
+            txnresphisbycha.xAxis[0].categories.push(result.labels[0]);
+            txnresphisbycha.series[0].addPoint(result.datasets[0].data[0], true, true);
+            txnresphisbycha.series[1].addPoint(result.datasets[0].data[1], true, true);
+            txnresphisbycha.series[2].addPoint(result.datasets[0].data[2], true, true);
+            txnresphisbycha.series[3].addPoint(result.datasets[0].data[3], true, true);
 
         }
 
 
 
-    }
-    function toTehranTimezone(date) {
-        hourOffset = 4;
-        date.setUTCHours(date.getUTCHours(), date.getUTCMinutes());
-        //time = date.getTime();
-        //date.setUTCFullYear(date.getUTCFullYear());
-        //dstStart = date.getTime();
-        //date.setUTCFullYear(date.getUTCFullYear());
-        //dstEnd = date.getTime();
-        //if (time > dstStart && time < dstEnd) hourOffset = 3;
-        date.setUTCHours(date.getUTCHours() - hourOffset, date.getUTCMinutes() - 30);
-        return date;
-    }
-
-
-
-    function getTimeFormat(value) {
-        var a = toTehranTimezone(new Date(value)).toLocaleTimeString("fa", {
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-        return (
-            a
-        );
     }
 
 

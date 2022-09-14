@@ -1,137 +1,47 @@
-﻿var option = {
-    chart: {
-        zoomType: 'x',
-        alignTicks: false,
-        height: (10 / 22 * 100) + '%' // set ratio
-    },
+﻿var connection = new signalR
+    .HubConnectionBuilder()
+    .withUrl("/monitoringHub")
+    .withAutomaticReconnect([0, 1000, 5000, 5000, 10000, 10000])
+    .build();
 
-    //rangeSelector: {
-    //    selected: 2,
-    //    inputEnabled: false,
-    //    buttons: [
-    //        {
-    //            type: 'all',
-    //            count: 1,
-    //            text: '5 ساعت'
-    //        },
-    //        {
-    //            type: 'hour',
-    //            count: 3,
-    //            text: '3 ساعت'
-    //        },
-    //        {
-    //            type: 'hour',
-    //            count: 1,
-    //            text: 'ساعت 1'
-    //        }
-    //    ],
-    //    buttonTheme: {
-    //        width: 100,
-    //        useHTML: true,
-    //        style: {
-    //            fontSize: '15px',
-    //            align: 'center',
+connection.start().then(() => console.log("hubconnected")).catch(() => console.log(error));//establish connection
 
-    //        }
-
-    //    },
-    //    labelStyle: {
-    //        visibility: 'hidden'
-    //    }
-    //},
-    title: {
-       /* text: 'نمودار تراکنش کل',*/
-        style: {
-            fontFamily: 'IRANSansWeb'
-        },
-    },
-    credits: {
-        text: ''
-    },
-    legend: {
-        enabled: true,
-        rtl: true,
-        y: 25,
-        margin: 0,
-        shadow: true,
-        verticalAlign: 'top',
-        itemStyle: {
-            cursor: "pointer",
-            fontFamily: 'IRANSansWeb_Light',
-        }
-    },
-    tooltip: {
-        enabled: true,
-        rtl: true,
-        split: false,
-        shared: true,
-        xDateFormat: '%H:%M',
-        useHTML: true,
-        style: {
-            fontFamily: 'IRANSansWeb',
-            fontSize: '15px',
-            rtl: true,
-        },
-        distance: 30,
-        padding: 5,
-        headerFormat: '<span>{point.key}</span><br/>'
-    },
-    xAxis: {
-        zoomEnabled: true,
-       /* categories: result.labels,*/
-        type: 'datetime',
-        tickInterval: 1,
-        labels: {
-            type: 'datetime',
-            step: 1,
-            rotation: 55,
-            style: {
-                fontSize: '11px',
-                fontFamily: 'IRANSansWeb'
-            },
-        }
-    },
-
-
-    yAxis: {
-        title: {
-            text: "تعداد",
-            style: {
-                fontSize: '15px',
-                fontFamily: 'IRANSansWeb'
-            },
-        },
-        opposite: false,
-        endOnTick: true,
-        showLastLabel: true,
-        //max: chart.yAxis[0].max,
-        labels: {
-            style: {
-                fontSize: '15px',
-                fontFamily: 'IRANSansWeb'
-            },
-            align: 'right',
-            x: -7,
-            y: 5,
-            formatter: function () {
-                return this.value;
-            }
-        }
-    },
-    plotOptions: {
-        series: {
-            pointRange: 1 * 60 * 1000,
-            fillOpacity: 0.2,
-            marker: {
-                symbol: 'circle',
-                //lineColor: 'white',
-                //lineWidth: 4
-            }
-        }
-    },
-    /*series: dataSets,*/
-    navigator: {
-        enabled: true
+connection.onreconnecting((error) => {
+    if (connection.state == signalR.HubConnectionState.Disconnected) {
+        isconnected = false;
+        connection.Start();
+        console.log("Connection is reconnecting : " + error);
     }
 
+});
+
+connection.onreconnected((error) => {
+    isconnected = true;
+    console.log("Connection is reconnected :" + error);
+});
+
+
+
+function toTehranTimezone(date) {
+    hourOffset = 4;
+    date.setUTCHours(date.getUTCHours(), date.getUTCMinutes());
+    var now = new Date();
+    now.setUTCHours(now.getUTCHours(), now.getUTCMinutes());
+
+    if ((date.getUTCHours() - now.getUTCHours()) < 4) hourOffset = 3;
+
+    date.setUTCHours(date.getUTCHours() - hourOffset, date.getUTCMinutes() - 30);
+    return date;
+}
+
+
+function getTimeFormat(value) {
+
+    return (
+        toTehranTimezone(new Date(value)).toLocaleTimeString("En", {
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    );
 }
